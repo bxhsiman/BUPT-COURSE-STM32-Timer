@@ -43,8 +43,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint8_t trigger = 0;
-uint8_t play = 1;
+int start = 0;
+
 uint16_t m_sec = 0;
 uint8_t sec = 0;
 uint8_t time = 0;
@@ -56,7 +56,6 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 void DisplayDriver(){
     static uint8_t digit= 0;
-    HAL_Delay(1);
     // Turn it off
     HAL_GPIO_WritePin(GPIOA,LED_EN0_Pin | LED_EN3_Pin | LED_EN4_Pin | LED_EN5_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(GPIOB,LED_EN1_Pin | LED_EN2_Pin , GPIO_PIN_SET);
@@ -66,21 +65,27 @@ void DisplayDriver(){
     switch (digit) {
         case 0:
             HAL_GPIO_WritePin(GPIOA, LED_EN0_Pin, GPIO_PIN_RESET);
+						HAL_GPIO_WritePin(GPIOB, LED_P_Pin , GPIO_PIN_SET);
             break;
         case 1:
             HAL_GPIO_WritePin(GPIOB, LED_EN1_Pin, GPIO_PIN_RESET);
+						HAL_GPIO_WritePin(GPIOB, LED_P_Pin , GPIO_PIN_SET);
             break;
         case 2:
             HAL_GPIO_WritePin(GPIOB, LED_EN2_Pin, GPIO_PIN_RESET);
+						HAL_GPIO_WritePin(GPIOB, LED_P_Pin , GPIO_PIN_RESET);
             break;
         case 3:
             HAL_GPIO_WritePin(GPIOA, LED_EN3_Pin, GPIO_PIN_RESET);
+						HAL_GPIO_WritePin(GPIOB, LED_P_Pin , GPIO_PIN_SET);
             break;
         case 4:
             HAL_GPIO_WritePin(GPIOA, LED_EN4_Pin, GPIO_PIN_RESET);
+						HAL_GPIO_WritePin(GPIOB, LED_P_Pin , GPIO_PIN_SET);
             break;
         case 5:
             HAL_GPIO_WritePin(GPIOA, LED_EN5_Pin, GPIO_PIN_RESET);
+						HAL_GPIO_WritePin(GPIOB, LED_P_Pin , GPIO_PIN_SET);
             break;
         default:
             break;
@@ -90,62 +95,62 @@ void DisplayDriver(){
         case 0:
             HAL_GPIO_WritePin(GPIOB, LED_A_Pin |LED_C_Pin | LED_E_Pin | LED_F_Pin | LED_B_Pin, GPIO_PIN_RESET);
             HAL_GPIO_WritePin(GPIOA, LED_B_Pin | LED_D_Pin, GPIO_PIN_RESET);
-            HAL_GPIO_WritePin(GPIOB, LED_G_Pin | LED_P_Pin, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(GPIOB, LED_G_Pin , GPIO_PIN_SET);
             break;
         case 1:
             HAL_GPIO_WritePin(GPIOA, LED_B_Pin, GPIO_PIN_RESET);
             HAL_GPIO_WritePin(GPIOB, LED_C_Pin | LED_B_Pin, GPIO_PIN_RESET);
             HAL_GPIO_WritePin(GPIOA, LED_D_Pin,GPIO_PIN_SET);
-            HAL_GPIO_WritePin(GPIOB, LED_A_Pin | LED_E_Pin | LED_F_Pin | LED_P_Pin| LED_G_Pin, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(GPIOB, LED_A_Pin | LED_E_Pin | LED_F_Pin | LED_G_Pin, GPIO_PIN_SET);
 
             break;
         case 2:
-            HAL_GPIO_WritePin(GPIOB, LED_A_Pin | LED_E_Pin | LED_G_Pin, GPIO_PIN_RESET);
-            HAL_GPIO_WritePin(GPIOA, LED_B_Pin | LED_D_Pin, GPIO_PIN_RESET);
-            HAL_GPIO_WritePin(GPIOB, LED_F_Pin | LED_C_Pin | LED_P_Pin, GPIO_PIN_SET);
+						HAL_GPIO_WritePin(GPIOA, LED_A_Pin | LED_E_Pin | LED_G_Pin | LED_B_Pin | LED_D_Pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(GPIOA, LED_F_Pin | LED_C_Pin , GPIO_PIN_SET);
+            HAL_GPIO_WritePin(GPIOB, LED_A_Pin | LED_E_Pin | LED_G_Pin | LED_B_Pin | LED_D_Pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(GPIOB, LED_F_Pin | LED_C_Pin , GPIO_PIN_SET);
 
             break;
         case 3:
-            HAL_GPIO_WritePin(GPIOB, LED_A_Pin | LED_C_Pin | LED_G_Pin , GPIO_PIN_RESET);
-            HAL_GPIO_WritePin(GPIOA, LED_B_Pin | LED_D_Pin , GPIO_PIN_RESET);
-            HAL_GPIO_WritePin(GPIOB, LED_E_Pin | LED_F_Pin | LED_P_Pin, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(GPIOA, LED_A_Pin | LED_C_Pin | LED_G_Pin | LED_B_Pin | LED_D_Pin , GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(GPIOA, LED_E_Pin | LED_F_Pin , GPIO_PIN_SET);
+						HAL_GPIO_WritePin(GPIOB, LED_A_Pin | LED_C_Pin | LED_G_Pin | LED_B_Pin | LED_D_Pin , GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(GPIOB, LED_E_Pin | LED_F_Pin , GPIO_PIN_SET);
 
             break;
         case 4:
             HAL_GPIO_WritePin(GPIOA, LED_B_Pin | LED_C_Pin | LED_F_Pin | LED_G_Pin, GPIO_PIN_RESET);
             HAL_GPIO_WritePin(GPIOB, LED_B_Pin | LED_C_Pin | LED_F_Pin | LED_G_Pin, GPIO_PIN_RESET);
-            HAL_GPIO_WritePin(GPIOA, LED_A_Pin | LED_D_Pin | LED_E_Pin | LED_P_Pin, GPIO_PIN_SET);
-            HAL_GPIO_WritePin(GPIOB, LED_A_Pin | LED_D_Pin | LED_E_Pin | LED_P_Pin, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(GPIOA, LED_A_Pin | LED_D_Pin | LED_E_Pin , GPIO_PIN_SET);
+            HAL_GPIO_WritePin(GPIOB, LED_A_Pin | LED_D_Pin | LED_E_Pin , GPIO_PIN_SET);
             break;
         case 5:
             HAL_GPIO_WritePin(GPIOA, LED_A_Pin | LED_C_Pin | LED_D_Pin | LED_F_Pin | LED_G_Pin, GPIO_PIN_RESET);
             HAL_GPIO_WritePin(GPIOB, LED_A_Pin | LED_C_Pin | LED_D_Pin | LED_F_Pin | LED_G_Pin, GPIO_PIN_RESET);
-            HAL_GPIO_WritePin(GPIOA, LED_B_Pin | LED_E_Pin | LED_P_Pin, GPIO_PIN_SET);
-            HAL_GPIO_WritePin(GPIOB, LED_B_Pin | LED_E_Pin | LED_P_Pin, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(GPIOA, LED_B_Pin | LED_E_Pin , GPIO_PIN_SET);
+            HAL_GPIO_WritePin(GPIOB, LED_B_Pin | LED_E_Pin , GPIO_PIN_SET);
             break;
         case 6:
             HAL_GPIO_WritePin(GPIOA, LED_A_Pin | LED_C_Pin | LED_D_Pin | LED_E_Pin | LED_F_Pin | LED_G_Pin, GPIO_PIN_RESET);
             HAL_GPIO_WritePin(GPIOB, LED_A_Pin | LED_C_Pin | LED_D_Pin | LED_E_Pin | LED_F_Pin | LED_G_Pin, GPIO_PIN_RESET);
-            HAL_GPIO_WritePin(GPIOA, LED_B_Pin | LED_P_Pin, GPIO_PIN_SET);
-            HAL_GPIO_WritePin(GPIOB, LED_B_Pin | LED_P_Pin, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(GPIOA, LED_B_Pin , GPIO_PIN_SET);
+            HAL_GPIO_WritePin(GPIOB, LED_B_Pin , GPIO_PIN_SET);
             break;
         case 7:
             HAL_GPIO_WritePin(GPIOA, LED_A_Pin | LED_B_Pin | LED_C_Pin, GPIO_PIN_RESET);
             HAL_GPIO_WritePin(GPIOB, LED_A_Pin | LED_B_Pin | LED_C_Pin, GPIO_PIN_RESET);
-            HAL_GPIO_WritePin(GPIOA, LED_D_Pin | LED_E_Pin | LED_F_Pin | LED_G_Pin | LED_P_Pin, GPIO_PIN_SET);
-            HAL_GPIO_WritePin(GPIOB, LED_D_Pin | LED_E_Pin | LED_F_Pin | LED_G_Pin | LED_P_Pin, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(GPIOA, LED_D_Pin | LED_E_Pin | LED_F_Pin | LED_G_Pin , GPIO_PIN_SET);
+            HAL_GPIO_WritePin(GPIOB, LED_D_Pin | LED_E_Pin | LED_F_Pin | LED_G_Pin , GPIO_PIN_SET);
             break;
         case 8:
             HAL_GPIO_WritePin(GPIOA, LED_A_Pin | LED_B_Pin | LED_C_Pin | LED_D_Pin | LED_E_Pin | LED_F_Pin | LED_G_Pin, GPIO_PIN_RESET);
             HAL_GPIO_WritePin(GPIOB, LED_A_Pin | LED_B_Pin | LED_C_Pin | LED_D_Pin | LED_E_Pin | LED_F_Pin | LED_G_Pin, GPIO_PIN_RESET);
-            HAL_GPIO_WritePin(GPIOA, LED_P_Pin, GPIO_PIN_SET);
-            HAL_GPIO_WritePin(GPIOB, LED_P_Pin, GPIO_PIN_SET);
             break;
         case 9:
             HAL_GPIO_WritePin(GPIOA, LED_A_Pin | LED_B_Pin | LED_C_Pin | LED_D_Pin | LED_F_Pin | LED_G_Pin, GPIO_PIN_RESET);
             HAL_GPIO_WritePin(GPIOB, LED_A_Pin | LED_B_Pin | LED_C_Pin | LED_D_Pin | LED_F_Pin | LED_G_Pin, GPIO_PIN_RESET);
-            HAL_GPIO_WritePin(GPIOA, LED_E_Pin | LED_P_Pin, GPIO_PIN_SET);
-            HAL_GPIO_WritePin(GPIOB, LED_E_Pin | LED_P_Pin, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(GPIOA, LED_E_Pin , GPIO_PIN_SET);
+            HAL_GPIO_WritePin(GPIOB, LED_E_Pin , GPIO_PIN_SET);
             break;
         default:
             break;
@@ -186,7 +191,7 @@ void Beep(){
     static uint32_t freq = 0;
     static uint32_t scale[] = {
             //h1 四行为一个小节
-            20,20,20,20, 22,22,22,22, //一行为一个4分音符
+            20,20,20,20,22,22,22,22, //一行为一个4分音符
             15,15,13,13,15,15,13,13,
             20,20,20,20,22,22,22,22,
             15,15,13,13,15,15,13,13,
@@ -249,7 +254,7 @@ void Beep(){
             25,25,25,25,22,22,22,22,
 
             //h4
-            20,20,20,20, 22,22,22,22,
+            20,20,20,20,22,22,22,22,
             15,15,13,13,15,15,13,13,
             20,20,20,20,22,22,22,22,
             15,15,13,13,15,15,13,13,
@@ -261,20 +266,355 @@ void Beep(){
 
             20,20,18,18,22,22,25,25,
             27,27,25,25,22,22,20,20,
-            15,15,15,15,15,15,18,18,
+            15,15,15,15,18,18,18,18,
             20,20,20,20,22,22,22,22,
 
+            15,15,15,15,15,37,15,15,
+            15,15,15,37,13,13,13,13,
             15,15,15,15,15,15,15,15,
-            37,37,37,37,13,13,13,13,
-            15,15,15,15,15,15,15,15,
-            37,37,37,37,37,37,37,37 //37 为空
+            37,37,37,37,37,37,37,37,
 
+//h5
+15,15,15,15,15,15,15,37,
+15,15,15,15,13,13,13,13,
+15,15,15,15,18,18,18,37,
+18,18,18,18,20,20,20,20,
+
+15,15,15,15,15,15,15,37,
+15,15,15,15,13,13,13,13,
+15,15,15,15,13,13,13,37,
+10,10,10,10,13,13,13,13,
+
+15,15,15,15,15,15,15,37,
+15,15,15,15,13,13,13,13,
+15,15,15,15,18,18,18,37,
+18,18,18,18,20,20,20,20,
+
+22,22,22,22,22,22,22,22,
+20,20,20,20,22,22,20,20,
+18,18,18,18,18,18,18,18,
+15,15,15,15,15,15,15,37,
+
+//h6
+15,15,15,15,15,15,15,37,
+15,15,15,15,13,13,13,13,
+15,15,15,15,18,18,18,37,
+18,18,18,18,20,20,20,20,
+
+15,15,15,15,15,15,15,37,
+15,15,15,15,13,13,13,13,
+15,15,15,15,13,13,13,37,
+13,13,13,13,10,10,10,10,
+
+15,15,15,15,15,15,15,37,
+15,15,15,15,13,13,13,13,
+15,15,15,15,18,18,18,37,
+18,18,18,18,20,20,20,20,
+
+22,22,22,22,22,22,22,22,
+20,20,20,20,22,22,20,20,
+18,18,18,18,18,18,18,18,
+15,15,15,15,15,15,15,15,
+
+//h7
+18,18,18,18,18,18,18,18,
+17,17,17,17,17,17,17,17,
+15,15,15,15,15,15,15,15,
+13,13,13,13,13,13,13,37,
+
+13,13,13,13,13,13,15,15,
+10,10,10,10,8,8,8,8,
+10,10,10,10,10,10,10,10,
+10,10,10,10,10,10,10,37,
+
+10,10,10,10,13,13,13,13,
+15,15,15,15,15,15,15,15,
+20,20,20,20,20,20,20,20,
+17,17,17,17,17,17,17,17,
+
+18,18,18,18,18,18,18,18,
+17,17,17,17,13,13,13,13,
+15,15,15,15,15,15,15,15,
+15,15,15,15,15,15,15,15,
+
+//h8
+18,18,18,18,18,18,18,18,
+17,17,17,17,17,17,17,17,
+15,15,15,15,15,15,15,15,
+13,13,13,13,13,13,13,13,
+
+13,13,13,13,13,13,15,15,
+10,10,10,10,8,8,8,8,
+10,10,10,10,10,10,10,37,
+10,10,10,10,13,13,13,13,
+
+15,15,15,37,15,15,15,15,
+15,15,15,37,15,15,15,15,
+18,18,18,18,18,18,18,18,
+20,20,20,20,20,20,20,20,
+
+17,17,17,17,17,17,17,17,
+17,17,17,17,17,17,17,17,
+17,17,17,17,37,37,37,37,
+15,15,15,15,18,18,18,18,
+
+//h9
+20,20,20,37,20,20,20,20,
+20,20,20,20,22,22,22,37,
+22,22,22,22,22,22,22,22,
+22,22,22,37,22,22,22,22,
+
+25,25,25,25,27,27,27,27,
+20,20,20,20,18,18,18,18,
+22,22,22,22,22,22,22,22,
+15,15,15,15,18,18,18,18,
+
+20,20,20,20,20,37,20,20,
+20,20,20,20,22,22,22,37,
+22,22,22,22,22,22,22,22,
+22,22,22,37,22,22,22,22,
+
+23,23,23,23,22,22,22,22,
+20,20,20,20,18,18,18,37,
+18,18,18,18,18,18,18,18,
+15,15,15,15,18,18,18,18,
+
+//h10
+20,20,20,20,20,37,20,20,
+20,20,20,20,22,22,22,37,
+22,22,22,22,22,22,22,22,
+22,22,22,37,22,22,22,22,
+
+25,25,25,25,27,27,27,27,
+20,20,20,20,18,18,18,18,
+22,22,22,22,22,22,22,22,
+15,15,15,15,18,18,18,18,
+
+23,23,23,23,23,23,23,23,
+22,22,22,22,22,22,22,22,
+20,20,20,20,20,20,20,20,
+18,18,18,18,18,18,18,18,
+
+20,20,20,20,22,22,22,22,
+18,18,18,18,13,13,13,13,
+15,15,15,15,15,15,15,37,
+15,15,15,15,18,18,18,18,
+
+//h9 2
+20,20,20,20,20,37,20,20,
+20,20,20,20,22,22,22,37,
+22,22,22,22,22,22,22,22,
+22,22,22,37,22,22,22,22,
+
+25,25,25,25,27,27,27,27,
+20,20,20,20,18,18,18,18,
+22,22,22,22,22,22,22,22,
+15,15,15,15,18,18,18,18,
+
+20,20,20,20,20,37,20,20,
+20,20,20,20,22,22,22,37,
+22,22,22,22,22,22,22,22,
+22,22,22,37,22,22,22,22,
+
+23,23,23,23,22,22,22,22,
+20,20,20,20,18,18,18,37,
+18,18,18,18,18,18,18,18,
+15,15,15,15,18,18,18,18,
+
+//h10 2 + 11
+20,20,20,20,20,37,20,20,
+20,20,20,20,22,22,22,37,
+22,22,22,22,22,22,22,22,
+22,22,22,37,22,22,22,22,
+
+25,25,25,25,27,27,27,27,
+20,20,20,20,18,18,18,18,
+22,22,22,22,22,22,22,22,
+15,15,15,15,18,18,18,18,
+
+23,23,23,23,23,23,23,23,
+22,22,22,22,22,22,22,22,
+20,20,20,20,20,20,20,20,
+18,18,18,18,18,18,18,18,
+
+20,20,20,20,18,18,18,18,
+22,22,22,22,25,25,25,25,
+27,27,27,27,27,27,27,27,
+27,27,27,27,37,37,37,37,
+
+//h3 2
+20,20,20,20, 22,22,22,22,
+15,15,13,13,15,15,13,13,
+20,20,20,20,22,22,22,22,
+15,15,13,13,15,15,13,13,
+
+20,20,20,20,22,22,22,22,
+15,15,13,13,15,15,13,13,
+18,18,18,18,17,17,17,17,
+18,17,15,15,13,13,13,13,
+
+20,20,20,20,22,22,22,22,
+15,15,13,13,15,15,13,13,
+20,20,20,20,22,22,22,22,
+15,15,13,13,15,15,13,13,
+
+20,20,20,20,22,22,22,22,
+25,25,25,25,30,30,30,30,
+29,29,30,30,29,29,27,27,
+25,25,25,25,22,22,22,22,
+
+//h4 2
+20,20,20,20, 22,22,22,22,
+15,15,13,13,15,15,13,13,
+20,20,20,20,22,22,22,22,
+15,15,13,13,15,15,13,13,
+
+20,20,20,20,22,22,22,22,
+15,15,13,13,15,15,13,13,
+18,18,18,18,17,17,17,17,
+18,17,15,15,13,13,13,13,
+
+20,20,18,18,22,22,25,25,
+27,27,25,25,22,22,20,20,
+15,15,15,15,15,15,18,18,
+20,20,20,20,22,22,22,22,
+
+15,15,15,15,15,37,15,15,
+15,15,15,37,13,13,13,13,
+15,15,15,15,15,15,15,15,
+37,37,37,37,37,37,37,37,
+
+//h12
+18,18,18,18,18,18,18,18,
+17,17,17,17,17,17,17,17,
+15,15,15,15,15,15,15,15,
+13,13,13,13,13,13,13,13,
+
+13,13,13,13,13,13,15,15,
+10,10,10,10,8,8,8,8,
+10,10,10,10,10,10,10,10,
+10,10,10,10,10,10,10,37,
+
+10,10,10,10,13,13,13,13,
+15,15,15,15,15,15,15,15,
+20,20,20,20,20,20,20,20,
+17,17,17,17,17,17,17,17,
+
+18,18,18,18,18,18,18,18,
+17,17,17,17,13,13,13,13,
+15,15,15,15,15,15,15,15,
+15,15,15,15,15,15,15,15,
+
+//h13
+18,18,18,18,18,18,18,18,
+17,17,17,17,17,17,17,17,
+15,15,15,15,15,15,15,15,
+13,13,13,13,13,13,13,37,
+
+13,13,13,13,13,13,15,15,
+10,10,10,10,8,8,8,8,
+10,10,10,10,10,10,10,37,
+10,10,10,10,13,13,13,13,
+
+15,15,15,37,15,15,15,15,
+15,15,15,37,15,15,15,15,
+18,18,18,18,18,18,18,18,
+20,20,20,20,20,20,20,20,
+
+17,17,17,17,17,17,17,17,
+17,17,17,17,17,17,17,17,
+17,17,17,17,37,37,37,37,
+15,15,15,15,18,18,18,18,
+
+//h14
+20,20,20,20,20,37,20,20,
+20,20,20,20,22,22,22,37,
+22,22,22,22,22,22,22,22,
+22,22,22,37,22,22,22,22,
+
+25,25,25,25,27,27,27,27,
+20,20,20,20,18,18,18,18,
+22,22,22,22,22,22,22,22,
+15,15,15,15,18,18,18,18,
+
+20,20,20,20,20,37,20,20,
+20,20,20,20,22,22,22,37,
+22,22,22,22,22,22,22,22,
+22,22,22,37,22,22,22,22,
+
+23,23,23,23,22,22,22,22,
+20,20,20,20,18,18,18,37,
+18,18,18,18,18,18,18,18,
+15,15,15,15,18,18,18,18,
+
+//h15
+20,20,20,20,20,37,20,20,
+20,20,20,20,22,22,22,37,
+22,22,22,22,22,22,22,22,
+22,22,22,37,22,22,22,22,
+
+25,25,25,25,27,27,27,27,
+20,20,20,20,18,18,18,18,
+22,22,22,22,22,22,22,22,
+15,15,15,15,18,18,18,18,
+
+23,23,23,23,23,23,23,23,
+22,22,22,22,22,22,22,22,
+20,20,20,20,20,20,20,20,
+18,18,18,18,18,18,18,18,
+
+20,20,20,20,22,22,22,22,
+20,20,20,20,22,22,22,22,
+22,22,22,22,22,22,22,22,
+17,17,17,17,20,20,20,20,
+
+//h16
+22,22,22,22,22,37,22,22,
+22,22,22,22,24,24,24,37,
+24,24,24,24,24,24,24,24,
+24,24,24,37,24,24,24,24,
+
+27,27,27,27,29,29,29,29,
+22,22,22,22,20,20,20,20,
+24,24,24,24,24,24,24,24,
+17,17,17,17,20,20,20,20,
+
+22,22,22,22,22,37,22,22,
+22,22,22,22,24,24,24,37,
+24,24,24,24,24,24,24,24,
+24,24,24,37,24,24,24,24,
+
+25,25,25,25,24,24,24,24,
+22,22,22,22,20,20,20,37,
+20,20,20,20,20,20,20,20,
+17,17,17,17,20,20,20,20,
+
+//h17
+22,22,22,22,22,37,22,22,
+22,22,22,22,24,24,24,37,
+24,24,24,24,24,24,24,24,
+24,24,24,37,24,24,24,24,
+
+27,27,27,27,29,29,29,29,
+22,22,22,22,20,20,20,20,
+24,24,24,24,24,24,24,24,
+17,17,17,17,20,20,20,20,
+
+25,25,25,25,25,25,25,25,
+24,24,24,24,24,24,24,24,
+22,22,22,22,22,22,22,22,
+20,20,20,20,20,20,20,20,
+
+22,22,22,22,20,20,20,20,
+24,24,24,24,27,27,27,27,
+29,29,29,29,29,29,29,29,
+29,29,29,29,29,29,29,29,
 
 
     };
     static uint32_t flag = 0;
-    if(m_sec % 31 == 0){ //31ms播放一个音符 即1000/32 32分音符
-        if (flag > 511) flag = 0; //表明运行多少个音符后从头开始播放 输入scale的长度
+    if(m_sec % 25		== 0){ //31ms播放一个音符 即1000/32 32分音符
+        if (flag > 2560) flag = 0; //表明运行多少个音符后从头开始播放 输入scale的长度
         switch (scale[flag++]) {
             case 1: //低1 DO
                 freq = 262;
@@ -388,6 +728,10 @@ void Beep(){
                 freq = 1;
                 break;
 
+
+
+
+
         }
 
         __HAL_TIM_SET_AUTORELOAD(&htim2,1000000/freq-1);
@@ -404,9 +748,6 @@ void Beep(){
 
 
     }
-//    else if(m_sec % 33 == 0){
-//        HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1);
-//    }
 
 
 
@@ -463,23 +804,11 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-      if(trigger == 0) {
-          play = !play;
-          if(play == 1 && sec == time){
-              m_sec = 0;
-              sec =0;
 
-          }
-          else{time = sec;}
-          trigger = 1;
-          HAL_TIM_PWM_Stop(&htim2,TIM_CHANNEL_1);
-      }
-      if(play == 1){
-          GetTime();
-          Beep();
-      }
-
+      GetTime();
+      Beep();
       DisplayDriver();
+      HAL_Delay(1);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -537,7 +866,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
     if(GPIO_PIN_SET == HAL_GPIO_ReadPin(BTN_0_GPIO_Port,BTN_0_Pin)) {
-        trigger = 0;
+        sec = 0;
+        m_sec = 0;
     }
 }
 
