@@ -43,8 +43,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-int start = 0;
-
+uint8_t trigger = 0;
+uint8_t play = 1;
 uint16_t m_sec = 0;
 uint8_t sec = 0;
 uint8_t time = 0;
@@ -802,19 +802,32 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+    while (1)
+    {
+        if(trigger == 0) {
+            play = !play;
+            if(play == 1 && sec == time){
+                m_sec = 0;
+                sec =0;
 
-      GetTime();
-      Beep();
-      DisplayDriver();
-      HAL_Delay(1);
-    /* USER CODE END WHILE */
+            }
+            else{time = sec;}
+            trigger = 1;
+            HAL_TIM_PWM_Stop(&htim2,TIM_CHANNEL_1);
+        }
+        if(play == 1){
+            GetTime();
+            Beep();
+        }
 
-    /* USER CODE BEGIN 3 */
-  }
-  /* USER CODE END 3 */
+        DisplayDriver();
+        /* USER CODE END WHILE */
+
+        /* USER CODE BEGIN 3 */
+    }
+    /* USER CODE END 3 */
 }
+
 
 /**
   * @brief System Clock Configuration
@@ -866,8 +879,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
     if(GPIO_PIN_SET == HAL_GPIO_ReadPin(BTN_0_GPIO_Port,BTN_0_Pin)) {
-        sec = 0;
-        m_sec = 0;
+        trigger = 0;
     }
 }
 
